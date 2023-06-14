@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
+//using System;
 
 public class Main : MonoBehaviour
 {
@@ -13,7 +13,8 @@ public class Main : MonoBehaviour
     public static readonly int CEIL_PRICE = 500;
     public static readonly int MAX_PROSPERITY = 10;
     public static readonly int COUNTRY_SIZE = 2;
-    public static readonly int MAX_DAY = 500;
+    public static readonly int MAX_DAY = 1000;
+    public static readonly int BLOCK_SIZE = 500;
 
     private static List<string> toWriteCountries = new List<string>();
     private static List<string> toWriteCurrencies = new List<string>();
@@ -50,17 +51,22 @@ public class Main : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (day < MAX_DAY)
+        if (day < MAX_DAY + 1)
         {
+            if (day % BLOCK_SIZE == 0)
+            {
+                if (day > 0)
+                {
+                    writeToFiles(true);
+                }
+                else
+                {
+                    writeToFiles(false);
+                }
+            }
             next();
             print(day);
         }
-        else if (day == MAX_DAY)
-        {
-            writeToFiles();
-            day++;
-        }
-
     }
 
     /// <summary>
@@ -76,18 +82,41 @@ public class Main : MonoBehaviour
         appendToPeopleStrings(day);
         day++;
         setExchangeRates();
-        setAllPreferences();
         peopleActions();
         addServiceSupplies();
         addCurrencySupplies();
         adjustPrices();
+        // Calculate inflation every month
+        if (day % 30 == 0)
+        {
+            calculateInflation();
+            setAllPreferences();
+        }
+    }
+
+    private void calculateInflation()
+    {
+        foreach (Country country in countries)
+        {
+            double currCPI = 0, prevCPI = 0;
+            foreach (Service s in country.Services)
+            {
+                currCPI += s.Price;
+                prevCPI += s.Previous_month_price;
+            }
+            country.Inflation = ((currCPI - prevCPI) / prevCPI) * 100;
+        }
     }
 
     public void adjustPrices()
     {
         foreach (Service service in services)
         {
-            service.adjustPrice();
+            if (Random.Range(0f, 1f) < 0.1)
+            {
+                service.adjustPrice();
+            }
+
         }
     }
 
@@ -151,80 +180,128 @@ public class Main : MonoBehaviour
     /// <summary>
     /// It writes the data to the files
     /// </summary>
-    void writeToFiles()
+    void writeToFiles(bool mode)
     {
         for (int i = 0; i < COUNTRY_COUNT; i++)
         {
-            string filePath = @"C:\Users\PC\Desktop\Programming Projects\Unity\New Unity Project (1)\Assets\Data\Countries\" + countries[i].name + ".txt";
-            using (StreamWriter file = new StreamWriter(filePath, false))
+            string filePath = @".\Assets\Data\Countries\" + countries[i].name + ".txt";
+            using (StreamWriter file = new StreamWriter(filePath, mode))
             {
-                file.WriteLine(toWriteCountries[i]);
+                if (day == 0)
+                {
+                    file.WriteLine(MAX_DAY);
+                }
+                else
+                {
+                    file.WriteLine(toWriteCountries[i]);
+                }
             }
-            filePath = @"C:\Users\PC\Desktop\Programming Projects\Unity\New Unity Project (1)\Assets\Data\Currencies\" + currencies[i].name + ".txt";
-            using (StreamWriter file = new StreamWriter(filePath, false))
+            filePath = @".\Assets\Data\Currencies\" + currencies[i].name + ".txt";
+            using (StreamWriter file = new StreamWriter(filePath, mode))
             {
-                file.WriteLine(toWriteCurrencies[i]);
+                if (day == 0)
+                {
+                    file.WriteLine(MAX_DAY);
+                }
+                else
+                {
+                    file.WriteLine(toWriteCurrencies[i]);
+                }
             }
         }
+        toWriteCountries = new List<string>();
+        toWriteCurrencies = new List<string>();
         for (int i = 0; i < SERVICE_COUNT; i++)
         {
-            string filePath = @"C:\Users\PC\Desktop\Programming Projects\Unity\New Unity Project (1)\Assets\Data\Services\" + services[i].name + ".txt";
-            using (StreamWriter file = new StreamWriter(filePath, false))
+            string filePath = @".\Assets\Data\Services\" + services[i].name + ".txt";
+            using (StreamWriter file = new StreamWriter(filePath, mode))
             {
-                file.WriteLine(toWriteServices[i]);
+                if (day == 0)
+                {
+                    file.WriteLine(MAX_DAY);
+                }
+                else
+                {
+                    file.WriteLine(toWriteServices[i]);
+                }
             }
         }
+        toWriteServices = new List<string>();
         for (int i = 0; i < PEOPLE_COUNT; i++)
         {
-            string filePath = @"C:\Users\PC\Desktop\Programming Projects\Unity\New Unity Project (1)\Assets\Data\People\" + people[i].name + ".txt";
-            using (StreamWriter file = new StreamWriter(filePath, false))
+            string filePath = @".\Assets\Data\People\" + people[i].name + ".txt";
+            using (StreamWriter file = new StreamWriter(filePath, mode))
             {
-                file.WriteLine(toWritePeople[i]);
+                if (day == 0)
+                {
+                    file.WriteLine(MAX_DAY);
+                }
+                else
+                {
+                    file.WriteLine(toWritePeople[i]);
+                }
             }
         }
+        toWritePeople = new List<string>();
     }
     void appendToCountryStrings(int day)
     {
         for (int i = 0; i < COUNTRY_COUNT; i++)
         {
-            if (day == 0)
+            if (day % BLOCK_SIZE == 0)
             {
-                toWriteCountries.Add(Convert.ToString(MAX_DAY));
+                toWriteCountries.Add("");
             }
-            toWriteCountries[i] += string.Format("\n{0} {1} {2} {3} {4}", day, countries[i].Balance.ToString("N2"), countries[i].Gdp.ToString("N2"), (countries[i].Balance * countries[i].Currency.ExchangeRate[currencies[0]]).ToString("N2"), (countries[i].Gdp * countries[i].Currency.ExchangeRate[currencies[0]]).ToString("N2"));
+            else
+            {
+                toWriteCountries[i] += "\n";
+            }
+            toWriteCountries[i] += string.Format("{0} {1} {2} {3} {4} {5}", day, countries[i].Balance.ToString("N2"), countries[i].Gdp.ToString("N2"), (countries[i].Balance * countries[i].Currency.ExchangeRate[currencies[0]]).ToString("N2"), (countries[i].Gdp * countries[i].Currency.ExchangeRate[currencies[0]]).ToString("N2"), countries[i].Inflation);
         }
     }
     void appendToCurrencyStrings(int day)
     {
         for (int i = 0; i < COUNTRY_COUNT; i++)
         {
-            if (day == 0)
+            if (day % BLOCK_SIZE == 0)
             {
-                toWriteCurrencies.Add(Convert.ToString(MAX_DAY));
+                toWriteCurrencies.Add("");
             }
-            toWriteCurrencies[i] += string.Format("\n{0} {1} {2} {3}", day, currencies[i].Value.ToString("N2"), currencies[i].Demand.ToString("N2"), currencies[i].Supply.ToString("N2"));
+            else
+            {
+                toWriteCurrencies[i] += "\n";
+            }
+            toWriteCurrencies[i] += string.Format("{0} {1} {2} {3}", day, currencies[i].Value.ToString("N2"), currencies[i].Demand.ToString("N2"), currencies[i].Supply.ToString("N2"));
         }
     }
     void appendToServiceStrings(int day)
     {
         for (int i = 0; i < SERVICE_COUNT; i++)
         {
-            if (day == 0)
+            if (day % BLOCK_SIZE == 0)
             {
-                toWriteServices.Add(Convert.ToString(MAX_DAY));
+                toWriteServices.Add("");
             }
-            toWriteServices[i] += string.Format("\n{0} {1} {2} {3} {4} {5} {6}", day, services[i].BasePrice.ToString("N2"), services[i].Price.ToString("N2"), (services[i].Price * services[i].OriginCountry.Currency.ExchangeRate[currencies[0]]).ToString("N2"), services[i].Demand.ToString("N2"), services[i].Supply.ToString("N2"), Service.Services_bought);
+            else
+            {
+                toWriteServices[i] += "\n";
+            }
+            toWriteServices[i] += string.Format("{0} {1} {2} {3} {4} {5} {6}", day, services[i].BasePrice.ToString("N2"), services[i].Price.ToString("N2"), (services[i].Price * services[i].OriginCountry.Currency.ExchangeRate[currencies[0]]).ToString("N2"), services[i].Demand.ToString("N2"), services[i].Supply.ToString("N2"), Service.Services_bought);
         }
     }
     void appendToPeopleStrings(int day)
     {
         for (int i = 0; i < PEOPLE_COUNT; i++)
         {
-            if (day == 0)
+            if (day % BLOCK_SIZE == 0)
             {
-                toWritePeople.Add(Convert.ToString(MAX_DAY));
+                toWritePeople.Add("");
             }
-            toWritePeople[i] += string.Format("\n{0} {1} {2} {3} {4} {5} {6}", day, people[i].Balance.ToString("N2"), (People[i].Balance * people[i].Country.Currency.ExchangeRate[currencies[0]]).ToString("N2"), people[i].SaveUrge.ToString("N2"), people[i].Country, people[i].Age.ToString("N2"), people[i].BoughtServices);
+            else
+            {
+                toWritePeople[i] += "\n";
+            }
+            toWritePeople[i] += string.Format("{0} {1} {2} {3} {4} {5} {6}", day, people[i].Balance.ToString("N2"), (People[i].Balance * people[i].Country.Currency.ExchangeRate[currencies[0]]).ToString("N2"), people[i].SaveUrge.ToString("N2"), people[i].Country, people[i].Age.ToString("N2"), people[i].BoughtServices);
         }
     }
 

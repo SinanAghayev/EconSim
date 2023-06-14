@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +13,8 @@ public class Country : MonoBehaviour
     private Dictionary<Service, double> importTax = new Dictionary<Service, double>(); // [0-0.3]
     private Dictionary<Service, double> exportTax = new Dictionary<Service, double>(); // [(-0.1)-0.1]
 
-
+    private ArrayList services = new ArrayList();
+    private double inflation = 0;
 
     /// <summary>
     /// This function initializes the country's name, currency, prosperity, and balance
@@ -31,6 +33,8 @@ public class Country : MonoBehaviour
         this.currency.Demand += this.balance;
     }
 
+
+    // TODO this function seems stupid check it later
     /// <summary>
     /// This function adds 10% of the exports to the supply of the currency
     /// </summary>
@@ -70,6 +74,8 @@ public class Country : MonoBehaviour
     public double Balance { get => balance; set => balance = value; }
     public double Gdp { get => gdp; set => gdp = value; }
     public int Exports { get => exports; set => exports = value; }
+    public ArrayList Services { get => services; set => services = value; }
+    public double Inflation { get => inflation; set => inflation = value; }
 
     ///
 }

@@ -7,6 +7,7 @@ public class Service : MonoBehaviour
     private string p_name;
     [SerializeField] private double basePrice;
     [SerializeField] private double price;
+    private double previous_month_price;
     private int demand = 1;
     private int supply = 1;
     private int new_supply = 0; // How much the supply will change
@@ -40,9 +41,11 @@ public class Service : MonoBehaviour
         this.BasePrice = basePrice; // Maybe limit
         this.supply = initialSupply;
         this.OriginCountry = country;
+        this.originCountry.Services.Add(this);
         this.seller = seller;
 
         this.price = this.basePrice;
+        this.previous_month_price = price;
         this.Currency = this.OriginCountry.Currency;
         this.Currency.Demand += this.price;
         this.new_supply = Random.Range(1, 20);
@@ -68,6 +71,8 @@ public class Service : MonoBehaviour
         {
             invest();
         }
+
+        // TODO change this function (it doesnt work logically; when no one buys it, supply continues to increase IT SHOULDN'T)
         this.supply += this.new_supply;
     }
 
@@ -83,7 +88,8 @@ public class Service : MonoBehaviour
     /// </summary>
     public void adjustPrice()
     {
-        this.price = Demand / Supply * BasePrice;
+        previous_month_price = price;
+        this.price = (double)Demand / (double)Supply * BasePrice;
     }
 
     /// GETTER SETTERS
@@ -99,4 +105,5 @@ public class Service : MonoBehaviour
     public int Supply { get => supply; set => supply = value; }
     public int New_supply { get => new_supply; set => new_supply = value; }
     public static int Services_bought { get => services_bought; set => services_bought = value; }
+    public double Previous_month_price { get => previous_month_price; set => previous_month_price = value; }
 }

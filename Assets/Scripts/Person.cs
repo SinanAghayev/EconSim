@@ -10,7 +10,7 @@ public class Person : MonoBehaviour
     private Country country;
     private Currency currency;
     [SerializeField] private double balance;
-    private double initial_balance;
+    private double prev_balance;
     private double saveUrge; // [0,0.8]
     private ArrayList services = new ArrayList();
     private int boughtServices = 0;
@@ -35,7 +35,7 @@ public class Person : MonoBehaviour
         this.currency = country.Currency;
 
         this.Balance = (this.Age + 1) * this.Country.Prosperity * Random.Range(1f, 100f);
-        this.initial_balance = this.balance;
+        this.prev_balance = this.balance;
         this.currency.Supply += this.balance;
         this.currency.Demand += this.balance;
         this.SaveUrge = Random.Range(0, 0.8f);
@@ -47,6 +47,7 @@ public class Person : MonoBehaviour
     {
         tryBuying();
         setSaveUrge();
+        prev_balance = balance;
     }
 
     /// <summary>
@@ -87,12 +88,12 @@ public class Person : MonoBehaviour
     void setSaveUrge()
     {
         // Some people spend their money even if they don't have, some doesn't spend even if they have.
-        if (Random.Range(0, 1) < 0.1)
+        if (Random.Range(0, 1f) < 0.1)
         {
-            this.saveUrge *= (balance / initial_balance);
+            this.saveUrge *= (balance / prev_balance);
         }
 
-        this.saveUrge = (this.saveUrge > 0.8) ? this.saveUrge : 0.8;
+        this.saveUrge = (this.saveUrge < 0.8) ? this.saveUrge : 0.8;
     }
 
     /// <summary>
@@ -101,12 +102,18 @@ public class Person : MonoBehaviour
     /// </summary>
     public void tryBuying()
     {
+        ArrayList bought = new ArrayList();
         foreach (Service service in this.prefService.Keys)
         {
             if (prefService[service] > this.saveUrge && service.Supply > 1)
             {
                 buy(service);
+                bought.Add(service);
             }
+        }
+        foreach (Service s in bought)
+        {
+            this.prefService[s] *= this.prefService[s];
         }
     }
 
@@ -181,4 +188,5 @@ public class Person : MonoBehaviour
     public ArrayList Services { get => services; set => services = value; }
     public Dictionary<Service, double> PrefService { get => prefService; set => prefService = value; }
     public int BoughtServices { get => boughtServices; set => boughtServices = value; }
+    public double Prev_balance { get => prev_balance; set => prev_balance = value; }
 }
