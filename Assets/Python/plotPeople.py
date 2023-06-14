@@ -17,6 +17,7 @@ for i in range(100):
         data = np.append(data, float(temp[8].replace(".", "").replace(",", ".")))
         if float(temp[1].replace(".", "").replace(",", ".")) > local_max:
             local_max = float(temp[1].replace(".", "").replace(",", "."))
+    print(i)
     if local_max > max_:
         max_ = local_max
         x = i

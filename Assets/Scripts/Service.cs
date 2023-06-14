@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class Service : MonoBehaviour
 {
+    public enum TYPE
+    {
+        GOVERNMENT = 0,
+        REGULAR = 1,
+        ALL = 2,
+    }
+
     private static int services_bought = 0;
     private string p_name;
     [SerializeField] private double basePrice;
@@ -11,9 +18,12 @@ public class Service : MonoBehaviour
     private int demand = 1;
     private int supply = 1;
     private int new_supply = 0; // How much the supply will change
+    private TYPE type_of_supply;
+    // TODO new type of service that governments buy
     private Currency currency;
     private Country originCountry;
     private Person seller;
+
     private Dictionary<int, double> agePref = new Dictionary<int, double>()
     {
         { 0, 0 },
@@ -35,14 +45,15 @@ public class Service : MonoBehaviour
     /// <param name="basePrice">The base price of the service.</param>
     /// <param name="Country">The country where the service is being sold.</param>
     /// <param name="Person">The person who is selling the service</param>
-    public void init(string name, double basePrice, int initialSupply, Country country, Person seller)
+    public void init(string name, double basePrice, int initialSupply, Person seller, int t)
     {
         this.Name = name;
         this.BasePrice = basePrice; // Maybe limit
         this.supply = initialSupply;
-        this.OriginCountry = country;
+        this.OriginCountry = seller.Country;
         this.originCountry.Services.Add(this);
         this.seller = seller;
+        this.type_of_supply = (TYPE)t;
 
         this.price = this.basePrice;
         this.previous_month_price = price;
@@ -71,9 +82,11 @@ public class Service : MonoBehaviour
         {
             invest();
         }
-
+        if (this.supply < this.demand)
+        {
+            this.supply += this.new_supply;
+        }
         // TODO change this function (it doesnt work logically; when no one buys it, supply continues to increase IT SHOULDN'T)
-        this.supply += this.new_supply;
     }
 
     public void invest()
@@ -106,4 +119,5 @@ public class Service : MonoBehaviour
     public int New_supply { get => new_supply; set => new_supply = value; }
     public static int Services_bought { get => services_bought; set => services_bought = value; }
     public double Previous_month_price { get => previous_month_price; set => previous_month_price = value; }
+    public TYPE Type_of_supply { get => type_of_supply; set => type_of_supply = value; }
 }

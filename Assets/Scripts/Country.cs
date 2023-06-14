@@ -34,15 +34,69 @@ public class Country : MonoBehaviour
     }
 
 
+    public void countryNext()
+    {
+        tryBuying();
+    }
+
+    /// <summary>
+    /// If the urge to buy a service is greater than the urge to save, and the service is available, buy
+    /// it
+    /// </summary>
+    public void tryBuying()
+    {
+        foreach (Service service in Main.Services)
+        {
+            // There is a little randomness so governments will sometimes chose not to buy even if they can.
+            if (service.Type_of_supply != Service.TYPE.REGULAR && service.Supply > 1 && Random.Range(0f, 10f) > 0.1)
+            {
+                buy(service);
+            }
+        }
+
+    }
+
+    /// <summary>
+    /// A person buys a service, and the price of the service is adjusted
+    /// </summary>
+    /// <param name="Service">The service that is being bought</param>
+    /// <returns>
+    /// Nothing
+    /// </returns>
+    public void buy(Service service)
+    {
+        double priceInLocal = service.Price * service.Currency.ExchangeRate[this.currency];
+        if (priceInLocal > balance)
+            return;
+        if (this != service.OriginCountry)
+            this.Gdp -= priceInLocal;
+
+        service.OriginCountry.Gdp += service.Price;
+
+        this.balance -= priceInLocal;
+
+        service.Seller.Balance += service.Price * (1 - service.OriginCountry.ExportTax[service]);
+        service.OriginCountry.Balance += service.Price * service.OriginCountry.ExportTax[service];
+
+        this.currency.Demand -= priceInLocal;
+        service.Currency.Demand += service.Price;
+
+        service.Supply--;
+        Service.Services_bought++;
+    }
+
+
     // TODO this function seems stupid check it later
     /// <summary>
     /// This function adds 10% of the exports to the supply of the currency
     /// </summary>
     public void addSupplyToCurrency()
     {
-        if (exports > 0)
+        currency.adjustValue();
+        if (currency.Value > 1)
         {
-            this.currency.Supply += exports / 10;
+            this.balance += currency.Supply / 10;
+            this.currency.Supply += currency.Supply / 10;
         }
     }
 

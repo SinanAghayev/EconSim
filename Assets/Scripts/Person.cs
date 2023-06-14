@@ -74,11 +74,11 @@ public class Person : MonoBehaviour
             {
                 PrefService.Add(service, servicePref);
             }
-            if (servicePref > 0.9)
+            if (servicePref > saveUrge)
             {
                 service.Demand++;
             }
-            if (servicePref < 0.5 && service.Demand > 1)
+            if (servicePref < saveUrge && service.Demand > 1)
             {
                 service.Demand--;
             }
@@ -105,7 +105,8 @@ public class Person : MonoBehaviour
         ArrayList bought = new ArrayList();
         foreach (Service service in this.prefService.Keys)
         {
-            if (prefService[service] > this.saveUrge && service.Supply > 1)
+            // There is a little randomness so people will sometimes chose not to buy even if they can.
+            if (prefService[service] > this.saveUrge && service.Supply > 1 && Random.Range(0f, 1f) > 0.5)
             {
                 buy(service);
                 bought.Add(service);
@@ -147,11 +148,6 @@ public class Person : MonoBehaviour
         this.BoughtServices++;
         service.OriginCountry.Gdp += service.Price;
         service.Supply--;
-
-        service.adjustPrice();
-
-        this.currency.adjustValue();
-        service.Currency.adjustValue();
 
         Service.Services_bought++;
     }

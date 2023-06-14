@@ -14,7 +14,7 @@ for i in range(50):
             for k in a[j + 1].strip().split(" ")
         ]
         days = np.append(days, temp[0])
-        # 1-base price, 2-price, 3-price in curr0, 4-demand, 5-supply, 6-overall services bought
+        # 1-base price, 2-price, 3-price in curr0, 4-demand, 5-supply, 6-overall services bought, 7-type
         data = np.append(data, temp[5])
         if len(days) == 50000:
             break

@@ -15,7 +15,7 @@ for i in range(10):
         ]
         days = np.append(days, temp[0])
         # 1-balance, 2-gdp, 3-balance in curr0, 4-gdp in curr0, 5-inflation
-        data = np.append(data, temp[5])
+        data = np.append(data, temp[3])
     plt.plot(days, data, label="Country " + str(i))
 
 plt.legend()
