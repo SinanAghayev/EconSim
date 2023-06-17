@@ -7,11 +7,11 @@ using UnityEngine.UI;
 
 public class Main : MonoBehaviour
 {
-    public static readonly int COUNTRY_COUNT = 10; // Also CURRENCY_COUNT
-    public static readonly int SERVICE_COUNT = 400;
-    public static readonly int PEOPLE_COUNT = 200;
+    public static readonly int COUNTRY_COUNT = 20; // Also CURRENCY_COUNT
+    public static readonly int SERVICE_COUNT = 1500;
+    public static readonly int PEOPLE_COUNT = 500;
     public static readonly int CEIL_PRICE = 500;
-    public static readonly int MAX_PROSPERITY = 10;
+    public static readonly int MAX_PROSPERITY = 20;
     public static readonly int COUNTRY_SIZE = 2;
     public static readonly int MAX_DAY = 500;
     public static readonly int BLOCK_SIZE = 500;
@@ -37,6 +37,7 @@ public class Main : MonoBehaviour
     {
         button.onClick.AddListener(next);
 
+        writeSettings();
         initCurrencies();
         initCountries();
         initPeople();
@@ -484,6 +485,18 @@ public class Main : MonoBehaviour
         }
     }
 
+    void writeSettings()
+    {
+        string filePath = @".\Assets\Data\settings.txt";
+        using (StreamWriter file = new StreamWriter(filePath, false))
+        {
+            file.WriteLine(MAX_DAY);
+            file.WriteLine(COUNTRY_COUNT);
+            file.WriteLine(COUNTRY_COUNT);
+            file.WriteLine(PEOPLE_COUNT);
+            file.WriteLine(SERVICE_COUNT);
+        }
+    }
 
     /// GETTER SETTERS
     public static List<Country> Countries { get => countries; set => countries = value; }
