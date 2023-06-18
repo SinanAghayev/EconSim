@@ -18,7 +18,7 @@ During the simulation, various data will be written to files in the Assets/Data 
 
 Use the Python script in the Python file to visualize the data written in the simulation.
 
-Customization
+# Customization
 You can customize several parameters in the Main script:
 
 COUNTRY_COUNT: Number of countries in the simulation.
