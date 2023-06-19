@@ -1,5 +1,5 @@
 # EconSim
-This repository contains the code for a simulation program written in C# using Unity. The program simulates economic interactions between countries, currencies, services, and people. The simulation tracks various parameters such as prosperity, prices, preferences, and taxes over a specified number of days.
+This repository contains the code for a simulation program written in C# using Unity. The program simulates economic interactions between countries and people. It also simulates the change in the values (price for services), demand, and supply of currencies and services. 
 
 # Requirements
 Unity game engine
@@ -17,6 +17,63 @@ The simulation will automatically start when you run the simulation on Unity and
 During the simulation, various data will be written to files in the Assets/Data directory. Each country, currency, service, and person will have its own data file.
 
 Use the Python script in the Python file to visualize the data written in the simulation.
+
+# Visualization
+After running the Python script, the program expects an array of numbers as input from you.
+
+## 1. Class type to visualize:
+
+   0 - Country
+   
+   1 - Currency
+   
+   2 - Person
+   
+   3 - Service
+
+## 2. Component of class to visualize:
+   
+   a) For Country:
+   
+     1 - Balance   
+     2 - GDP
+     3 - Balance in Currency 0*
+     4 - GDP in Currency 0*
+     5 - Inflation
+   
+
+   b) For Currency:
+   
+     1 - Value   
+     2 - Demand  
+     3 - Supply
+   
+
+   c) For Person:
+   
+     1 - Balance   
+     2 - Balance in Currency 0*   
+     3 - Save Urge   
+     4 - Country   
+     5 - Age   
+     6 - Number of services bought
+   
+
+   d) For Services:
+   
+     1 - Base Price   
+     2 - Price   
+     3 - Price in Currency 0*   
+     4 - Demand   
+     5 - Supply   
+     6 - Total number of all bought services ( Same for all services )   
+     7 - Type of service
+
+## 3. The number of days to be included (OPTIONAL):
+   Show the simulation from day 0 to the given input. If not given, then it is defined as MAX_DAYS as the default.
+
+
+\* **Currency of the first (0 indexed) country is chosen as a comparison medium.**
 
 # Customization
 You can customize several parameters in the Main script:
