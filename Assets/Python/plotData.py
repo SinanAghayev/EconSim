@@ -20,14 +20,6 @@ countOfItems = [20, 20, 500, 2000]
 
 maxDays = 0
 
-# Read settings
-# Before definiton of functions because of maxDays.
-with open("./Assets/Data/settings.txt", "r") as file:
-    temp = file.readlines()
-    maxDays = int(temp[0])
-    for i in range(1, 5):
-        countOfItems[i - 1] = int(temp[i])
-
 
 def is_numeric(value):
     try:
@@ -37,7 +29,7 @@ def is_numeric(value):
         return False
 
 
-def show(f, graphType, d=maxDays):
+def show(f, graphType, d):
     # f is type of file to open
     # graphType is type of graph to show
     # d is day count to show
@@ -63,13 +55,19 @@ def show(f, graphType, d=maxDays):
     plt.show()
 
 
+with open("./Assets/Data/settings.txt", "r") as file:
+    temp = file.readlines()
+    maxDays = int(temp[0])
+    for i in range(1, 5):
+        countOfItems[i - 1] = int(temp[i])
+
 while 1:
     inputs = [int(i) for i in input("\nChoose: ").strip().split()]
     if len(inputs) == 3:
         show(inputs[0], inputs[1], inputs[2])
     else:
         print(maxDays)
-        show(inputs[0], inputs[1])
+        show(inputs[0], inputs[1], maxDays)
 
 # MANUAL:
 # 0 is country and 1-balance, 2-gdp, 3-balance in curr0, 4-gdp in curr0, 5-inflation
