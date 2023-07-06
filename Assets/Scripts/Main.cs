@@ -7,13 +7,14 @@ using UnityEngine.UI;
 
 public class Main : MonoBehaviour
 {
-    public static readonly int COUNTRY_COUNT = 20; // Also CURRENCY_COUNT
-    public static readonly int SERVICE_COUNT = 1500;
-    public static readonly int PEOPLE_COUNT = 500;
+    public static readonly int COUNTRY_COUNT = 15; // Also CURRENCY_COUNT
+    public static readonly int SERVICE_COUNT = 1000;
+    public static readonly int PEOPLE_COUNT = 400;
     public static readonly int CEIL_PRICE = 500;
     public static readonly int MAX_PROSPERITY = 20;
     public static readonly int COUNTRY_SIZE = 2;
-    public static readonly int MAX_DAY = 500;
+    public static readonly int MAX_DAY = 1000;
+    public static readonly int INTERVAL = 1;
     public static readonly int BLOCK_SIZE = 500;
 
     private static List<string> toWriteCountries = new List<string>();
@@ -84,7 +85,7 @@ public class Main : MonoBehaviour
         setExchangeRates();
         peopleCountryActions();
         // Do these every month
-        if (day % 30 == 0)
+        if (day % INTERVAL == 0)
         {
             print(day);
             calculateInflation();

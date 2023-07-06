@@ -35,11 +35,17 @@ def show(f, graphType, d):
     # d is day count to show
     print(d)
     for i in range(countOfItems[f]):
+        #
         days = np.array([])
         data = np.array([])
+
         filename = filenames[f] % (i)
+
+        # Open file and save the data
         with open(filename, "r") as file:
             a = file.readlines()
+
+        # Save the data to arrays to plot
         for j in range(d):
             temp = [
                 float(k.replace(".", "").replace(",", "."))
