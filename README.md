@@ -26,7 +26,7 @@ Use the Python script in the Python file to visualize the data written in the si
 
 # Visualization
 
-After running the Python script, the program expects an array of numbers as input from you.
+After running the Python script, you can change the parameters to see the desired plot.
 
 \* **Currency of the first (0 indexed) country is chosen as a comparison medium.**
 
